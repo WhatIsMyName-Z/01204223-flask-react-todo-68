@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
-
+from flask_migrate import Migrate
 
 
 app = Flask(__name__)
@@ -15,6 +15,7 @@ class Base(DeclarativeBase):
       pass
 
 db = SQLAlchemy(app, model_class=Base)
+migrate = Migrate(app, db)
 class TodoItem(db.Model):
         id: Mapped[int] = mapped_column(Integer, primary_key=True)
         title: Mapped[str] = mapped_column(String(100))
@@ -27,7 +28,7 @@ class TodoItem(db.Model):
             }
 
 INITIAL_TODOS = [
-        TodoItem(title='Learn Flask'),
+       TodoItem(title='Learn Flask'),
         TodoItem(title='Build a Flask App'),
         ]
 
@@ -75,7 +76,7 @@ def add_todo():
 
 @app.route('/api/todos/<int:id>/toggle/', methods=['PATCH'])
 def toggle_todo(id):
-    todos = TodoItem.query.get(id)
+    todo = TodoItem.query.get_or_404(id)
     todo.done = not todo.done
     db.session.commit()
     return jsonify(todo.to_dict())
