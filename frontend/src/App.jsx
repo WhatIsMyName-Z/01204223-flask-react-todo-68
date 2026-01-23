@@ -8,12 +8,13 @@ function App() {
 
   const [todoList, setTodoList] = useState([]);
   const [newTitle, setNewTitle] = useState("");
+  const [newComments, setNewComments] = useState({});
 
   useEffect(() => {
     fetchTodoList();
   }, []);
 
-  async function fetchTodoList() {
+async function fetchTodoList() {
     try {
       const response = await fetch(TODOLIST_API_URL);
       if (!response.ok) { 
@@ -26,7 +27,7 @@ function App() {
     }
   }
 
-  async function toggleDone(id) {
+async function toggleDone(id) {
     const toggle_api_url = `${TODOLIST_API_URL}${id}/toggle/`
     try {
       const response = await fetch(toggle_api_url, {
@@ -40,8 +41,26 @@ function App() {
       console.error("Error toggling todo:", error);
     }
   }
+async function addNewComment(todoId) {
+		    try {
+			          const url = `${TODOLIST_API_URL}${todoId}/comments/`;
+			          const response = await fetch(url, {
+					          method: 'POST',
+					          headers: {
+							            'Content-Type': 'application/json',
+							          },
+					          body: JSON.stringify({ 'message': newComments[todoId] || "" }),
+					        });
+			          if (response.ok) {
+					          setNewComments({ ...newComments, [todoId]: "" });
+					          await fetchTodoList();
+					        }
+			        } catch (error) {
+					      console.error("Error adding new comment:", error);
+					    }
+		  }
 
-  async function addNewTodo() {
+async function addNewTodo() {
     try {
       const response = await fetch(TODOLIST_API_URL, {
         method: 'POST',
@@ -60,21 +79,22 @@ function App() {
     }
   }
 
-  async function deleteTodo(id) {
-    const delete_api_url = `${TODOLIST_API_URL}${id}/`
-    try {
-      const response = await fetch(delete_api_url, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        setTodoList(todoList.filter(todo => todo.id !== id));
-      }
-    } catch (error) {
-      console.error("Error deleting todo:", error);
-    }
-  }
+async function deleteTodo(id) {
+	  const delete_api_url = `${TODOLIST_API_URL}${id}/`;
+	  try {
+		const response = await fetch(delete_api_url, {                               method: 'DELETE',
+	});
+		      if (response.ok) {
+			            setTodoList(todoList.filter(todo => todo.id !== id));
+			          }
+		    } catch (error) {
+			        console.error("Error deleting todo:", error);
+			      }
+}
 
-  return (
+
+
+return (
     <>
       <h1>Todo List</h1>
       <ul>
@@ -93,11 +113,23 @@ function App() {
 		                    </ul>
 		                  </>
 		                )}
-          </li>
+		<div className="new-comment-forms">
+		 <input
+		    type="text"
+	            value={newComments[todo.id] || ""}
+		    onChange={(e) => {
+			    const value = e.target.value;
+			    setNewComments({ ...newComments, [todo.id]:value });
+		    }}
+		/>
+      <button onClick={() => {addNewComment(todo.id)}}>Add Comment</button>
+	</div>
+	</li>
         ))}
       </ul>
       New: <input type="text" value={newTitle} onChange={(e) => {setNewTitle(e.target.value)}} />
       <button onClick={() => {addNewTodo()}}>Add</button>
+     
     </>
   )
 }
