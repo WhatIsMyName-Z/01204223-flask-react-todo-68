@@ -43,7 +43,7 @@ async function toggleDone(id) {
       console.error("Error toggling todo:", error);
     }
   }
-async function addNewComment(todoId) {
+async function addNewComment(todoId, newComment) {
 		    try {
 			          const url = `${TODOLIST_API_URL}${todoId}/comments/`;
 			          const response = await fetch(url, {
@@ -51,10 +51,10 @@ async function addNewComment(todoId) {
 					          headers: {
 							            'Content-Type': 'application/json',
 							          },
-					          body: JSON.stringify({ 'message': newComments[todoId] || "" }),
+					          body: JSON.stringify({ 'message': newComment }),
 					        });
 			          if (response.ok) {
-					          setNewComments({ ...newComments, [todoId]: "" });
+					          
 					          await fetchTodoList();
 					        }
 			        } catch (error) {
@@ -104,6 +104,9 @@ return (
           <TodoItem
             key={todo.id}
             todo={todo}
+            toggleDone={toggleDone}
+            deleteTodo={deleteTodo}
+            addNewComment={addNewComment}
             />
         ))}
       </ul>
