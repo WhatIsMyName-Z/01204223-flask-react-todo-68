@@ -61,6 +61,7 @@ INITIAL_TODOS = [
 
 
 with app.app_context():
+    db.create_all() 
     if TodoItem.query.count()==0:
         for item in INITIAL_TODOS:
             db.session.add(item)
