@@ -21,6 +21,11 @@ const originalTodoList = [
 vi.mock('../PrivateRoute.jsx', () => ({
   default: ({ children }) => children
 }));
+
+vi.mock('../context/AuthContext.jsx', () => ({
+  AuthProvider: ({ children }) => children,
+}));
+
 describe('App', () => {
   beforeEach(() => {
     vi.stubGlobal('fetch', vi.fn());
