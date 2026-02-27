@@ -18,7 +18,9 @@ const originalTodoList = [
   todoItem1,
   todoItem2,
 ]
-
+vi.mock('../PrivateRoute.jsx', () => ({
+  default: ({ children }) => children
+}));
 describe('App', () => {
   beforeEach(() => {
     vi.stubGlobal('fetch', vi.fn());
